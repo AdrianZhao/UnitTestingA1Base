@@ -1,6 +1,8 @@
 #region Setup
+using System.Xml.Linq;
 using UnitTestingA1Base.Data;
 using UnitTestingA1Base.Models;
+using static UnitTestingA1Base.Data.BusinessLogicLayer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,26 +39,43 @@ app.MapGet("/recipes/byIngredient", (string? name, int? id) =>
     {
         HashSet<Recipe> recipes = bll.GetRecipesByIngredient(id, name);
         return Results.Ok(recipes);
-    } catch(Exception ex)
+    } 
+    catch (Exception ex)
     {
-        return Results.NotFound();
+        return Results.NotFound(ex.Message);
     }
 });
 
 ///<summary>
 /// Returns a HashSet of all Recipes that only contain ingredients that belong to the Dietary Restriction provided by name or Primary Key
 /// </summary>
-app.MapGet("/recipes/byDiet", (string name, int id) =>
+app.MapGet("/recipes/byDiet", (string? name, int? id) =>
 {
-
+    try
+    {
+        HashSet<Recipe> recipes = bll.GetRecipesByDietary(id, name);
+        return Results.Ok(recipes);
+    }
+    catch (Exception ex)
+    {
+        return Results.NotFound(ex.Message);
+    }
 });
 
 ///<summary>
 ///Returns a HashSet of all recipes by either Name or Primary Key. 
 /// </summary>
-app.MapGet("/recipes", (string name, int id) =>
+app.MapGet("/recipes", (string? name, int? id) =>
 {
-
+    try
+    {
+        HashSet<Recipe> recipes = bll.GetRecipesByIdOrName(id, name);
+        return Results.Ok(recipes);
+    }
+    catch (Exception ex)
+    {
+        return Results.NotFound(ex.Message);
+    }
 });
 
 ///<summary>
@@ -72,8 +91,17 @@ app.MapGet("/recipes", (string name, int id) =>
 /// 
 /// All IDs should be created for these objects using the returned value of the AppStorage.GeneratePrimaryKey() method
 /// </summary>
-app.MapPost("/recipes", () => {
-
+app.MapPost("/recipes", (CreateRecipeModel crm) => 
+{
+    try
+    {
+        bll.CreateNewRecipe(crm);
+        return Results.Ok(new { Message = "Recipe created successfully." });
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(ex.Message);
+    }
 });
 
 ///<summary>
@@ -81,18 +109,34 @@ app.MapPost("/recipes", () => {
 /// If there is only one Recipe using that Ingredient, then the Recipe is also deleted, as well as all associated RecipeIngredients
 /// If there are multiple Recipes using that ingredient, a Forbidden response code should be provided with an appropriate message
 ///</summary>
-app.MapDelete("/ingredients", (int id, string name) =>
+app.MapDelete("/ingredients", (int? id, string? name) =>
 {
-
+    try
+    {
+        string message = bll.DeleteIngredients(id, name);
+        return Results.Ok(message);
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(ex.Message);
+    }
 });
 
 /// <summary>
 /// Deletes the requested recipe from the database
 /// This should also delete the associated IngredientRecipe objects from the database
 /// </summary>
-app.MapDelete("/recipes", (int id, string name) =>
+app.MapDelete("/recipes", (int? id, string? name) =>
 {
-
+    try
+    {
+        string message = bll.DeleteRecipe(id, name);
+        return Results.Ok(message);
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(ex.Message);
+    }
 });
 
 #endregion
