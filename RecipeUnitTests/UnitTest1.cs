@@ -95,6 +95,34 @@ namespace RecipeUnitTests
         }
 
         [TestMethod]
+        public void GetRecipesByIngredient_ValidIdWithValidName_ReturnsRecipesWithIngredient()
+        {
+            // Arrange
+            BusinessLogicLayer bll = _initializeBusinessLogic();
+            int ingredientId = 6;
+            string ingredientName = "Spa";
+            int recipeCount = 2;
+            // Act
+            HashSet<Recipe> recipes = bll.GetRecipesByIngredient(ingredientId, ingredientName);
+            // Assert
+            Assert.AreEqual(recipeCount, recipes.Count);
+        }
+
+        [TestMethod]
+        public void GetRecipesByIngredient_ValidIdWithInvalidName_ReturnsRecipesWithIngredient()
+        {
+            // Arrange
+            BusinessLogicLayer bll = _initializeBusinessLogic();
+            int ingredientId = 6;
+            string ingredientName = "LOL";
+            int recipeCount = 2;
+            // Act
+            HashSet<Recipe> recipes = bll.GetRecipesByIngredient(ingredientId, ingredientName);
+            // Assert
+            Assert.AreEqual(recipeCount, recipes.Count);
+        }
+
+        [TestMethod]
         public void GetRecipesByDietary_ValidId_ReturnsRecipesWithDietary()
         {
             // Arrange
@@ -175,6 +203,34 @@ namespace RecipeUnitTests
         }
 
         [TestMethod]
+        public void GetRecipesByDietary_ValidIdWithValidName_ReturnsRecipesWithDietary()
+        {
+            // Arrange
+            BusinessLogicLayer bll = _initializeBusinessLogic();
+            int dietaryId = 1;
+            string dietaryName = "Vegetarian";
+            int recipeCount = 2;
+            // Act
+            HashSet<Recipe> recipes = bll.GetRecipesByDietary(dietaryId, dietaryName);
+            // Assert
+            Assert.AreEqual(recipeCount, recipes.Count);
+        }
+
+        [TestMethod]
+        public void GetRecipesByDietary_ValidIdWithInvalidName_ReturnsRecipesWithDietary()
+        {
+            // Arrange
+            BusinessLogicLayer bll = _initializeBusinessLogic();
+            int dietaryId = 1;
+            string dietaryName = "LOL";
+            int recipeCount = 2;
+            // Act
+            HashSet<Recipe> recipes = bll.GetRecipesByDietary(dietaryId, dietaryName);
+            // Assert
+            Assert.AreEqual(recipeCount, recipes.Count);
+        }
+
+        [TestMethod]
         public void GetRecipesByIdOrName_ValidId_ReturnsRecipesWithId()
         {
             // Arrange
@@ -248,6 +304,34 @@ namespace RecipeUnitTests
             int recipeId = 13;
             string recipeName = "LOL";
             int recipeCount = 0;
+            // Act
+            HashSet<Recipe> recipes = bll.GetRecipesByIdOrName(recipeId, recipeName);
+            // Assert
+            Assert.AreEqual(recipeCount, recipes.Count);
+        }
+
+        [TestMethod]
+        public void GetRecipesByIdOrName_ValidIdWithValidName_ReturnsRecipesWithDietary()
+        {
+            // Arrange
+            BusinessLogicLayer bll = _initializeBusinessLogic();
+            int recipeId = 1;
+            string recipeName = "Spaghetti Carbonara";
+            int recipeCount = 1;
+            // Act
+            HashSet<Recipe> recipes = bll.GetRecipesByIdOrName(recipeId, recipeName);
+            // Assert
+            Assert.AreEqual(recipeCount, recipes.Count);
+        }
+
+        [TestMethod]
+        public void GetRecipesByIdOrName_ValidIdWithInvalidName_ReturnsRecipesWithDietary()
+        {
+            // Arrange
+            BusinessLogicLayer bll = _initializeBusinessLogic();
+            int recipeId = 1;
+            string recipeName = "LOL";
+            int recipeCount = 1;
             // Act
             HashSet<Recipe> recipes = bll.GetRecipesByIdOrName(recipeId, recipeName);
             // Assert
@@ -447,7 +531,7 @@ namespace RecipeUnitTests
             // Act and Assert
             Assert.AreEqual("Ingredient and associated recipe deleted successfully", bll.DeleteIngredients(ingredientId, ingredientName));
         }
-
+        
         [TestMethod]
         public void DeleteIngredients_InvalidIdValidNameCannotBeDelete_ReturnsOkMessage()
         {
@@ -459,6 +543,20 @@ namespace RecipeUnitTests
             Assert.AreEqual("Ingredient is used in multiple recipes. Cannot delete.", bll.DeleteIngredients(ingredientId, ingredientName));
         }
 
+        [TestMethod]
+        public void DeleteIngredients_InvalidIdInvalidName_ReturnsNotFound()
+        {
+            // Arrange
+            BusinessLogicLayer bll = _initializeBusinessLogic();
+            int ingredientId = 11;
+            string ingredientName = "LOL";
+            // Act and Assert            
+            Assert.ThrowsException<ArgumentNullException>(() =>
+            {
+                bll.DeleteIngredients(ingredientId, ingredientName);
+            });
+        }
+      
         [TestMethod]
         public void DeleteRecipe_ValidId_ReturnsOkMessage()
         {
@@ -512,6 +610,42 @@ namespace RecipeUnitTests
             BusinessLogicLayer bll = _initializeBusinessLogic();
             int recipeId = 13;
             string recipeName = "Spaghetti Carbonara";
+            // Act and Assert
+            Assert.AreEqual("Recipe and associated IngredientRecipe objects deleted successfully", bll.DeleteRecipe(recipeId, recipeName));
+        }
+
+        [TestMethod]
+        public void DeleteRecipe_InvalidIdInvalidName_ReturnsNotFound()
+        {
+            // Arrange
+            BusinessLogicLayer bll = _initializeBusinessLogic();
+            string recipeName = "LOL";
+            int recipeId = 13;
+            // Act and Assert            
+            Assert.ThrowsException<ArgumentNullException>(() =>
+            {
+                bll.DeleteRecipe(recipeId, recipeName);
+            });
+        }
+
+        [TestMethod]
+        public void DeleteRecipe_ValidIdValidName_ReturnsOkMessage()
+        {
+            // Arrange
+            BusinessLogicLayer bll = _initializeBusinessLogic();
+            int recipeId = 1;
+            string recipeName = "Spaghetti Carbonara";          
+            // Act and Assert
+            Assert.AreEqual("Recipe and associated IngredientRecipe objects deleted successfully", bll.DeleteRecipe(recipeId, recipeName));
+        }
+
+        [TestMethod]
+        public void DeleteRecipe_ValidIdInvalidName_ReturnsOkMessage()
+        {
+            // Arrange
+            BusinessLogicLayer bll = _initializeBusinessLogic();
+            int recipeId = 1;
+            string recipeName = "LOL";         
             // Act and Assert
             Assert.AreEqual("Recipe and associated IngredientRecipe objects deleted successfully", bll.DeleteRecipe(recipeId, recipeName));
         }
